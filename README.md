@@ -20,8 +20,8 @@ This WordPress shortcode provides a convenient way to display the current time, 
 
 Add the code snippet to your theme's `functions.php` file or a custom plugin:
 
-function get_time_shortcode() {
-	$ntpServers = ['time1.google.com', 'time2.google.com', 'time3.google.com', 'time4.google.com'];
+	function get_time_shortcode() {
+		$ntpServers = ['time1.google.com', 'time2.google.com', 'time3.google.com', 'time4.google.com'];
 
 		foreach ($ntpServers as $ntpServer) {
 			
