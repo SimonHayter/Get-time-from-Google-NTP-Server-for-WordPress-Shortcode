@@ -27,3 +27,4 @@ function get_time_shortcode() {
 	}
 	return "<p>Error: Could not retrieve time.</p>"; 
 }
+add_shortcode('get_time', 'get_time_shortcode');
