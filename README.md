@@ -4,41 +4,41 @@ This will get the worlds time from Google's NTP time server and then output the 
 
 Edit your functions.php and add the following code:
 
-function get_time_shortcode() {
-  // Google's public NTP servers
-  $ntpServers = [
-    'time1.google.com',
-    'time2.google.com',
-    'time3.google.com',
-    'time4.google.com'
-  ];
+		function get_time_shortcode() {
+		  // Google's public NTP servers
+		  $ntpServers = [
+		    'time1.google.com',
+		    'time2.google.com',
+		    'time3.google.com',
+		    'time4.google.com'
+		  ];
 
-  // Try each server until we get a successful response
-  foreach ($ntpServers as $ntpServer) {
-    $socket = @fsockopen($ntpServer, 123, $errNo, $errStr, 1);
-    if ($socket) {
-      fputs($socket, "\x1b" . str_repeat("\0", 47));
-      $response = fread($socket, 48);
-      fclose($socket);
+		  // Try each server until we get a successful response
+		  foreach ($ntpServers as $ntpServer) {
+		    $socket = @fsockopen($ntpServer, 123, $errNo, $errStr, 1);
+		    if ($socket) {
+		      fputs($socket, "\x1b" . str_repeat("\0", 47));
+		      $response = fread($socket, 48);
+		      fclose($socket);
 
-      // Extract the timestamp from the response
-      $timestamp = unpack('N12', $response);
-      $timestamp = $timestamp[9] - 2208988800; // Convert NTP timestamp to Unix timestamp
+		      // Extract the timestamp from the response
+		      $timestamp = unpack('N12', $response);
+		      $timestamp = $timestamp[9] - 2208988800; // Convert NTP timestamp to Unix timestamp
 
-      // Set the timezone to London
-      date_default_timezone_set('Europe/London');
+		      // Set the timezone to London
+		      date_default_timezone_set('Europe/London');
 
-      // Format the time in UK standard
-      $currentTime = date('d/m/Y H:i:s', $timestamp);
-      return "<p>The current time in the UK is: " . $currentTime . "</p>";
-    }
-  }
+		      // Format the time in UK standard
+		      $currentTime = date('d/m/Y H:i:s', $timestamp);
+		      return "<p>The current time in the UK is: " . $currentTime . "</p>";
+		    }
+		  }
 
-  // If no server responds, return an error message
-  return "<p>Error: Could not retrieve time from Google NTP server.</p>";
-}
+		  // If no server responds, return an error message
+		  return "<p>Error: Could not retrieve time from Google NTP server.</p>";
+		}
 
-add_shortcode('get_time', 'get_time_shortcode');
+		add_shortcode('get_time', 'get_time_shortcode');
 
 To use the function simply use any of the methods below:
 
