@@ -1,41 +1,53 @@
 # NTP Get Time Shortcode for WordPress
 
-This will get the worlds time from Google's NTP time server and then output the time using a return/echo on the page. 
+This WordPress shortcode provides a convenient way to display the current time, fetched directly from Google's highly accurate NTP time servers.  No more relying on your server's potentially wonky clock – give your users the time, the *right* time! (Pun intended, of course.)
 
-Edit your functions.php and add the following code:
+**Implementation**
 
-	function get_time_shortcode() {
-	  // Google's public NTP servers
-	  $ntpServers = [
-	    'time1.google.com',
-	    'time2.google.com',
-	    'time3.google.com',
-	    'time4.google.com'
-	  ];
+1.  **Edit your `functions.php` file:** Add the code snippet to your theme's `functions.php` file or a custom plugin.
 
-	  // Try each server until we get a successful response
-	  foreach ($ntpServers as $ntpServer) {
-	    $socket = @fsockopen($ntpServer, 123, $errNo, $errStr, 1);
-	    if ($socket) {
-	      fputs($socket, "\x1b" . str_repeat("\0", 47));
-	      $response = fread($socket, 48);
-	      fclose($socket);
+2.  **Display the time:**  You have several options for displaying the time on your website:
 
-	      // Extract the timestamp from the response
-	      $timestamp = unpack('N12', $response);
-	      $timestamp = $timestamp[9] - 2208988800; // Convert NTP timestamp to Unix timestamp
+    *   **Shortcode:** Simply use the `[get_time]` shortcode within the content of any page or post.
+    *   **Theme Integration:**  Use `do_shortcode('[get_time]');` or `echo do_shortcode('[get_time]');` in your `header.php` or `footer.php` file, depending on your theme's structure.
 
-	      // Set the timezone to London
-	      date_default_timezone_set('Europe/London');
+**Customization**
 
-	      // Format the time in UK standard
-	      $currentTime = date('d/m/Y H:i:s', $timestamp);
-	      return "<p>The current time in the UK is: " . $currentTime . "</p>";
-	    }
-	  }
+*   **Time Zone:** To display the time in a different time zone, refer to the list of available time zones on Wikipedia ([https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)) and update the `date_default_timezone_set()` function in the code.
+*   **Time Format:**  To customize the time format, refer to the PHP documentation for date formatting ([https://www.php.net/manual/en/datetime.format.php](https://www.php.net/manual/en/datetime.format.php)) and adjust the `date()` function accordingly.
 
-	  // If no server responds, return an error message
-	  return "<p>Error: Could not retrieve time from Google NTP server.</p>";
+**Code**
+
+Add the code snippet to your theme's `functions.php` file or a custom plugin:
+
+function get_time_shortcode() {
+	$ntpServers = ['time1.google.com', 'time2.google.com', 'time3.google.com', 'time4.google.com'];
+
+		foreach ($ntpServers as $ntpServer) {
+			
+			// Use error handling instead of suppression
+			if ($socket = fsockopen($ntpServer, 123, $errNo, $errStr, 1)) { 
+				fputs($socket, "\x1b" . str_repeat("\0", 47));
+				$response = fread($socket, 48);
+				fclose($socket);
+
+				// Validate the response data before using it
+				if (strlen($response) === 48) { 
+					date_default_timezone_set('Europe/London');
+					$currentTime = date('d/m/Y H:i:s', unpack('N12', $response)[9] - 2208988800);
+					return "<p>The current time in the UK is: " . $currentTime . "</p>";
+
+				// Else will trigger a log event	
+				} else {
+		        	// Log the error or handle it appropriately
+		        	error_log("Invalid response from NTP server: $ntpServer"); 
+		      	}
+		    } else {
+			// Log the connection error
+				error_log("Error connecting to NTP server: $ntpServer - $errStr ($errNo)"); 
+			}
+		}
+		return "<p>Error: Could not retrieve time.</p>"; 
 	}
 
 To use the function simply use any of the methods below:
