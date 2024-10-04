@@ -1,4 +1,4 @@
-function uk_time_shortcode() {
+function get_time_shortcode() {
   // Google's public NTP servers
   $ntpServers = [
     'time1.google.com',
@@ -32,4 +32,4 @@ function uk_time_shortcode() {
   return "<p>Error: Could not retrieve time from Google NTP server.</p>";
 }
 
-add_shortcode('uk_time', 'uk_time_shortcode');
+add_shortcode('get_time', 'get_time_shortcode');
