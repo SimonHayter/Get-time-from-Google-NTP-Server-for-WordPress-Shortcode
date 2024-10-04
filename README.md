@@ -50,9 +50,98 @@ Add the code snippet to your theme's `functions.php` file or a custom plugin:
 		return "<p>Error: Could not retrieve time.</p>"; 
 	}
 
-To use the function simply use any of the methods below:
 
-1. Within the contents of a page or post use the short code: [get_time]
-2. Methods to to use in footer.php or header.php use do_shortcode('uk_time'); or <?= do_shortcode('uk_time'); ?> or ' .do_shortcode('uk_time') .' Depending on your code
-3. If you wish to change the time zone you can find the time zones here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and update the functions.php
-4. If you wish to change the time stamp output edit the functions and use this as a guide to match your country default: https://www.php.net/manual/en/datetime.format.php
+**Resolving the Issue**
+If the [get_time] shortcode fails to display the correct time, it's likely due to a firewall restriction on your server.  NTP (Network Time Protocol) requires port 123 to be open for communication with time servers.
+
+You have several options to resolve this:
+
+***Direct Server Access (Root/Sudo)***
+
+If you have root or sudo access to your server, you can open port 123 directly using the following commands:
+
+Generic Linux (IPtables):
+
+	Bash
+	iptables -A INPUT -p udp --dport 123 -j ACCEPT
+	iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
+	# Use code with caution.
+
+Ubuntu Linux (UFW):
+
+	Bash
+	sudo ufw allow ntp 
+	# Use code with caution.
+
+***Contact Your Hosting Provider***
+
+If you do not manage your server directly, contact your hosting provider and request that they open port 123 for your domain.  Please note that some hosting providers may have restrictions on opening specific ports.
+
+***Use Server Time***
+
+If direct server access or opening port 123 is not feasible, you can utilize the server's time with a time zone adjustment.  Refer to the list of time zones (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to find the appropriate time zone code for your region.  You'll need to modify the shortcode function to use the server's time and apply the necessary time zone offset.  The updated shortcode will be [server_time].   
+
+***Error Indication***
+
+If port 123 is closed, you'll likely see an error message similar to this:  [Insert Screenshot of Error Message Here - If Available]
+
+You can also check your server's error log for more detailed information about the issue.
+
+
+
+**Not Working**
+
+The main reason the code will fail to work if your server has a firewall and port 123 is closed which is required to be open to be able to communicate with any NTP time server. To fix this issue the server port needs to be open. Enabling display errors in the PHP will show the error but alternatively you will find the error in the error log. The error will look like this:
+
+Port Closed Error 1: 
+	Warning: fsockopen(): Unable to connect to time1.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time2.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time3.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time4.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+
+Port Closed Error 2:
+	Warning: fsockopen(): Unable to connect to time1.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time2.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time3.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+	Warning: fsockopen(): Unable to connect to time4.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
+
+
+You have 3 methods to choose from below:
+
+**You have ROOT/SUDO access**
+
+Generic Linux: IPtables use 
+	iptables -A INPUT -p udp --dport 123 -j ACCEPT
+	iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
+
+Ubuntu Linux: UFW
+	sudo ufw allow ntp 
+
+**Create a Ticket**
+
+If you do not operate your own server then you will need your webhost to open port 123 on your domain. Simply create a ticket, mentioning your domain name and ask for the port 123 to be opened for you to use NTP time servers. Please note that not all webhosts will open ports, some do, some don't. If yours refuses to do so then use the method below.
+
+**Server Time**
+
+If you do not have root/sudo access, and the website host will not open the port 123 then sadly your out of luck using the most accurate get time method. You will need to use server time and off-set if required using your country code using the zones at [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). Below is the new code and take note the shortcode is different. 
+
+	function server_time_shortcode($atts = [], $content = null) {
+	  // Sanitize the content (if any)
+	  $content = wp_kses_post($content); 
+	
+	  // Set the default timezone to London
+	  date_default_timezone_set('Europe/London');
+	
+	  // Get the current time in the UK
+	  $ukTime = date('d/m/Y H:i:s');
+	
+	  // Return the time in an HTML paragraph with sanitized content
+	  return "<p>The current time in the UK is: " . $ukTime . "</p>" . $content;
+	}
+	
+	// Register the shortcode
+	add_shortcode('server_time', 'server_time_shortcode'); 
+
+ Use short code [server_time]
+
+
