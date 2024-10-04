@@ -93,13 +93,15 @@ You can also check your server's error log for more detailed information about t
 
 The main reason the code will fail to work if your server has a firewall and port 123 is closed which is required to be open to be able to communicate with any NTP time server. To fix this issue the server port needs to be open. Enabling display errors in the PHP will show the error but alternatively you will find the error in the error log. The error will look like this:
 
-Port Closed Error 1: 
+Port Closed Error 1:
+
 	Warning: fsockopen(): Unable to connect to time1.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 	Warning: fsockopen(): Unable to connect to time2.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 	Warning: fsockopen(): Unable to connect to time3.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 	Warning: fsockopen(): Unable to connect to time4.google.com:123 (Connection timed out) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 
 Port Closed Error 2:
+
 	Warning: fsockopen(): Unable to connect to time1.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 	Warning: fsockopen(): Unable to connect to time2.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
 	Warning: fsockopen(): Unable to connect to time3.google.com:123 (Network is unreachable) in /home/username/example.co.uk/wp-content/themes/ext/functions.php on line 50
