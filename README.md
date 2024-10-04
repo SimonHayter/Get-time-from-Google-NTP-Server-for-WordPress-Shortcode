@@ -113,10 +113,12 @@ You have 3 methods to choose from below:
 **You have ROOT/SUDO access**
 
 Generic Linux: IPtables use 
+
 	iptables -A INPUT -p udp --dport 123 -j ACCEPT
 	iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
 
 Ubuntu Linux: UFW
+
 	sudo ufw allow ntp 
 
 **Create a Ticket**
@@ -144,6 +146,6 @@ If you do not have root/sudo access, and the website host will not open the port
 	// Register the shortcode
 	add_shortcode('server_time', 'server_time_shortcode'); 
 
- Use short code [server_time]
+Use short code [server_time]
 
 
